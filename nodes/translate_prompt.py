@@ -77,15 +77,16 @@ class YoudaoTranslate():
 
 class TranslatePrompt:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "text": ("STRING",
                          {
                              "multiline": True
                          }),
-                "language": (['AUTO', 'CN', 'EN'],),
+                "language": (['AUTO', 'zh-CN', 'en'],),
                 "translate": (['YOUDAO', 'GOOGLE'],),
+                "target_language": (['en', 'zh-CN', ],),
             }
         }
 
@@ -94,7 +95,7 @@ class TranslatePrompt:
     OUTPUT_NODE = True
     CATEGORY = "fofo/prompt"
 
-    def get_prompt(self, text: str, language: str, translate: str) -> tuple[str]:
+    def get_prompt(self, text: str, language: str, translate: str, target_language: str) -> tuple[str]:
         if translate == "YOUDAO":
-            return (YoudaoTranslate().translate(text, input_lang=language),)
-        return (GoogleTranslate().translate(text, input_lang=language),)
+            return (YoudaoTranslate().translate(text, input_lang=language, output_lang=target_language),)
+        return (GoogleTranslate().translate(text, input_lang=language, output_lang=target_language),)

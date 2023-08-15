@@ -5,7 +5,7 @@ from .magicprompt import DPMagicPrompt
 from .random import DPRandomGenerator
 from .format_prompt import FormatPrompt
 from .translate_prompt import TranslatePrompt
-
+from .sdxl_image_size import SDXLImageSize
 NODE_CLASS_MAPPINGS = {
     "DPRandomGenerator": DPRandomGenerator,
     "DPCombinatorialGenerator": DPCombinatorialGenerator,
@@ -14,6 +14,7 @@ NODE_CLASS_MAPPINGS = {
     "DPMagicPrompt": DPMagicPrompt,
     "FormatPrompt": FormatPrompt,
     "TranslatePrompt": TranslatePrompt,
+    "SDXLImageSize": SDXLImageSize,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -25,6 +26,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DPMagicPrompt": "Magic Prompt",
     "FormatPrompt": "Format Prompt",
     "TranslatePrompt": "Translate Prompt",
+    "SDXLImageSize": "SDXL Image Size",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
