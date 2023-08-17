@@ -48,6 +48,7 @@ RESOLUTIONS_H = [
     {"width": 512, "height": 2048},
 ]
 MIN_RESOLUTION = 950272
+BASE_RESOLUTION = 1024 * 1024
 
 
 class SDXLImageSize:
@@ -55,26 +56,34 @@ class SDXLImageSize:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "width": ("INT", {"default": 512, "max": 4096, "min": 64, "step": 1}),
-                "height": ("INT", {"default": 512, "max": 4096, "min": 64, "step": 1}),
+                "width": ("INT", {"default": 1024, "max": 4096, "min": 64, "step": 1}),
+                "height": ("INT", {"default": 1024, "max": 4096, "min": 64, "step": 1}),
+                "scale_by": ("FLOAT", {"default": 1.0, "max": 2.0, "min": 0.5, "step": 0.1})
 
             }
         }
 
-    RETURN_TYPES = ("INT", "INT")
-    RETURN_NAMES = ("width", "height")
+    RETURN_TYPES = ("INT", "INT", "FLOAT")
+    RETURN_NAMES = ("WIDTH", "HEIGHT", "SCALE_BY")
     FUNCTION = "get_image_size"
     OUTPUT_NODE = True
     CATEGORY = "fofo/image"
 
-    def get_image_size(self, width: int, height: int, ) -> tuple[int, int]:
+    def get_image_size(self, width: int, height: int, scale_by: float) -> tuple[int, int, float]:
         best_resolution = None
         min_difference = float('inf')
 
         scale = (width * height) / MIN_RESOLUTION
+
         scale = math.sqrt(scale)
+
+        scale_by_out = 1 / math.sqrt((width * height) / BASE_RESOLUTION)
+        scale_by_out = scale_by_out * scale_by
+        scale_by_out = scale_by_out * width // 64 * 64 / width
+        scale_by_out = scale_by_out * height // 64 * 64 / height
+
         print(f"Min resolution: {MIN_RESOLUTION}")
-        print(f"Scale: {scale} width: {width} height: {height}")
+        print(f"Scale: {scale} width: {width} height: {height},scale_by:{scale_by_out}")
         width = int(width / scale)
         height = int(height / scale)
         print(f"Scale: {scale} width: {width} height: {height}")
@@ -90,7 +99,13 @@ class SDXLImageSize:
             if total_diff < min_difference:
                 min_difference = total_diff
                 best_resolution = resolution
+
+        output_width = best_resolution["width"]
+        output_height = best_resolution["height"]
+        if scale_by != 1.0:
+            output_height = int(output_height * scale_by) // 64 * 64
+            output_width = int(output_width * scale_by) // 64 * 64
         print(
-            f"Closest resolution: {best_resolution} width: {best_resolution['width']} height: {best_resolution['height']}"
+            f"Closest resolution: {best_resolution} width: {output_width} height: {output_height}"
         )
-        return best_resolution["width"], best_resolution["height"]
+        return output_width, output_height, scale_by_out

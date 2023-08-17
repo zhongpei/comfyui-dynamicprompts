@@ -1,3 +1,5 @@
 dynamicprompts
 googletrans==4.0.0-rc1
+split_image==2.0.1
+chatglm-cpp==0.2.4 # pip install .
 pygoogletranslation
